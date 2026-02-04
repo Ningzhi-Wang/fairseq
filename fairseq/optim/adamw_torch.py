@@ -21,8 +21,8 @@ def _parse_betas(betas: Any) -> Tuple[float, float]:
 @dataclass
 class AdamWTorchConfig(FairseqDataclass):
     lr: float = field(default=1e-3, metadata={"help": "learning rate"})
-    betas: str = field(default="(0.9, 0.999)", metadata={"help": "betas for AdamW"})
-    eps: float = field(default=1e-8, metadata={"help": "epsilon"})
+    adam_betas: str = field(default="(0.9, 0.999)", metadata={"help": "betas for AdamW"})
+    adam_eps: float = field(default=1e-8, metadata={"help": "epsilon"})
     weight_decay: float = field(default=0.01, metadata={"help": "weight decay (AdamW style)"})
     amsgrad: bool = field(default=False, metadata={"help": "use AMSGrad variant"})
 
@@ -35,13 +35,13 @@ class FairseqAdamWTorch(FairseqOptimizer):
     """
     def __init__(self, cfg: AdamWTorchConfig, params):
         super().__init__(cfg)
-        betas = _parse_betas(cfg.betas)
+        betas = _parse_betas(cfg.adam_betas)
 
         self._optimizer = torch.optim.AdamW(
             params,
             lr=cfg.lr,
             betas=betas,
-            eps=cfg.eps,
+            eps=cfg.adam_eps,
             weight_decay=cfg.weight_decay,
             amsgrad=cfg.amsgrad,
             fused=True
